@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ERROR 404</title>
+</head>
+<body>
+<div>
+    <h2>Error 404</h2>
+    <div>
+        <p th:text="'Error message: ' + ${errorMessage}">Error message</p>
+    </div>
+    <br/>
+    <br/>
+    <a th:href="@{/}">Список пользователей</a>
+    <br/>
+    <br/>
+    <a th:href="@{/deleteuser}">Удалить пользователя</a>
+    <br/>
+    <br/>
+    <a th:href="@{/edituser}">Отредактировать пользователя</a>
+</div>
+</body>
+</html>
