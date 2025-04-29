@@ -1,17 +1,24 @@
 package ru.kata.spring.boot_security.demo.model;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails, GrantedAuthority {
 
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,12 +33,21 @@ public class User {
    @Column(name = "email")
    private String email;
 
+   @NotEmpty(message = "Имя пользователя не должно быть пустым")
+   @Size(min = 2, max = 100, message = "Имя пользователя должно быть от 2 до 100 символов")
+   @Column(name = "username")
+   private String username;
+
+   @Column(name = "password")
+   private String password;
+
    public User() {}
    
-   public User(String firstName, String lastName, String email) {
+   public User(String firstName, String lastName, String email, String username) {
       this.firstName = firstName;
       this.lastName = lastName;
       this.email = email;
+      this.username = username;
    }
 
    public Long getId() {
@@ -66,6 +82,47 @@ public class User {
       this.email = email;
    }
 
+   public String getUsername() {
+      return username;
+   }
+
+   @Override
+   public boolean isAccountNonExpired() {
+      return false;
+   }
+
+   @Override
+   public boolean isAccountNonLocked() {
+      return false;
+   }
+
+   @Override
+   public boolean isCredentialsNonExpired() {
+      return false;
+   }
+
+   @Override
+   public boolean isEnabled() {
+      return false;
+   }
+
+   public void setUsername(String username) {
+      this.username = username;
+   }
+
+   @Override
+   public Collection<? extends GrantedAuthority> getAuthorities() {
+      return List.of();
+   }
+
+   public String getPassword() {
+      return password;
+   }
+
+   public void setPassword(String password) {
+      this.password = password;
+   }
+
    @Override
    public boolean equals(Object o) {
       if (o == null || getClass() != o.getClass()) return false;
@@ -73,12 +130,13 @@ public class User {
       return Objects.equals(getId(), user.getId()) &&
               Objects.equals(getFirstName(), user.getFirstName()) &&
               Objects.equals(getLastName(), user.getLastName()) &&
-              Objects.equals(getEmail(), user.getEmail());
+              Objects.equals(getEmail(), user.getEmail()) &&
+              Objects.equals(getUsername(), user.getUsername());
    }
 
    @Override
    public int hashCode() {
-      return 31 * Objects.hash(getId(), getFirstName(), getLastName(), getEmail());
+      return 31 * Objects.hash(getId(), getFirstName(), getLastName(), getEmail(), getUsername());
    }
 
    @Override
@@ -88,6 +146,12 @@ public class User {
       sb.append("firstName: ").append(firstName).append("\n");
       sb.append("lastName: ").append(lastName).append("\n");
       sb.append("email: ").append(email).append("\n");
+      sb.append("username: ").append(username).append("\n");
       return sb.toString();
+   }
+
+   @Override
+   public String getAuthority() {
+      return "";
    }
 }
