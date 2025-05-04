@@ -5,20 +5,25 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails, GrantedAuthority {
+public class User implements UserDetails {
 
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,12 +39,23 @@ public class User implements UserDetails, GrantedAuthority {
    private String email;
 
    @NotEmpty(message = "Имя пользователя не должно быть пустым")
-   @Size(min = 2, max = 100, message = "Имя пользователя должно быть от 2 до 100 символов")
+   @Size(min = 5, max = 100, message = "Имя пользователя должно быть от 5 до 100 символов")
    @Column(name = "username")
    private String username;
 
    @Column(name = "password")
    private String password;
+
+   @Transient
+   private String passwordCheck;
+
+   @ManyToMany(fetch = FetchType.LAZY)
+   @JoinTable(
+           name = "users_roles",
+           joinColumns = @JoinColumn(name = "user_id"),
+           inverseJoinColumns = @JoinColumn(name = "role_id")
+   )
+   private Set<Role> roles;
 
    public User() {}
    
@@ -86,6 +102,34 @@ public class User implements UserDetails, GrantedAuthority {
       return username;
    }
 
+   public void setUsername(String username) {
+      this.username = username;
+   }
+
+   public String getPassword() {
+      return password;
+   }
+
+   public void setPassword(String password) {
+      this.password = password;
+   }
+
+   public String getPasswordCheck() {
+      return passwordCheck;
+   }
+
+   public void setPasswordCheck(String passwordCheck) {
+      this.passwordCheck = passwordCheck;
+   }
+
+   public Set<Role> getRoles() {
+      return roles;
+   }
+
+   public void setRoles(Set<Role> roles) {
+      this.roles = roles;
+   }
+
    @Override
    public boolean isAccountNonExpired() {
       return true;
@@ -106,21 +150,9 @@ public class User implements UserDetails, GrantedAuthority {
       return true;
    }
 
-   public void setUsername(String username) {
-      this.username = username;
-   }
-
    @Override
    public Collection<? extends GrantedAuthority> getAuthorities() {
-      return List.of();
-   }
-
-   public String getPassword() {
-      return password;
-   }
-
-   public void setPassword(String password) {
-      this.password = password;
+      return getRoles();
    }
 
    @Override
@@ -150,8 +182,4 @@ public class User implements UserDetails, GrantedAuthority {
       return sb.toString();
    }
 
-   @Override
-   public String getAuthority() {
-      return "";
-   }
 }
