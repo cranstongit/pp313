@@ -3,6 +3,9 @@ package ru.kata.spring.boot_security.demo.configs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.userdetails.DaoAuthenticationConfigurer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.util.concurrent.TimeUnit;
 
@@ -22,11 +26,14 @@ import java.util.concurrent.TimeUnit;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final SuccessUserHandler successUserHandler;
+    private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public WebSecurityConfig(SuccessUserHandler successUserHandler, PasswordEncoder passwordEncoder) {
+    public WebSecurityConfig(SuccessUserHandler successUserHandler,
+                             UserDetailsService userDetailService, PasswordEncoder passwordEncoder) {
         this.successUserHandler = successUserHandler;
+        this.userDetailsService = userDetailService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -34,6 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//                .sessionManagement().sessionCreationPolicy(sessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .antMatchers("/", "/index", "/css/*", "/js/*").permitAll()
@@ -65,38 +73,55 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .permitAll();
     }
 
-    // аутентификация inMemory
-    @Bean
     @Override
-    public UserDetailsService userDetailsService() { //сервис для получения пользователя из БД
-        UserDetails alexUser = User.builder()
-                .username("alex")
-                .password("123")
-//                .password(passwordEncoder.encode("password"))
-                .roles("USER") //ROLE_USER
-                .build();
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(daoAuthenticationProvider());
+    }
 
-        UserDetails adminUser = User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("root"))
-                .roles("ADMIN") //ROLE_ADMIN
-                .build();
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(passwordEncoder);
+        provider.setUserDetailsService(userDetailsService);
+        return provider;
+    }
 
-        return new InMemoryUserDetailsManager(alexUser, adminUser);
+    // аутентификация inMemory
+//    @Bean
+//    @Override
+//    public UserDetailsService userDetailsService() { //сервис для получения пользователя из БД
+//        UserDetails alexUser = User.builder()
+//                .username("alex")
+//                .password("123")
+////                .password(passwordEncoder.encode("password"))
+//                .roles("USER") //ROLE_USER
+//                .build();
+//
+//        UserDetails adminUser = User.builder()
+//                .username("admin")
+//                .password(passwordEncoder.encode("root"))
+//                .roles("ADMIN") //ROLE_ADMIN
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(alexUser, adminUser);
+
+
+
 //        UserDetails user =                          //информация о юзере
 //                User.withDefaultPasswordEncoder()
 //                        .username("user")
-//                        .password("{bcrypt}$2a$12$rC15mVBpZc8vhS1riF8sjOesVjf3UO10X2cnOMXcR8f4oRZsaOrxG") //userman
+//                        .password("user1") //userman
 //                        .roles("USER")
 //                        .build();
 //
 //        UserDetails admin = //new
 //                User.withDefaultPasswordEncoder()
 //                        .username("admin")
-//                        .password("{bcrypt}$2a$12$MyjF/vvVOnUmlbP4vBDiSeleDaj.WR6tbPSETGsT4u5aEDTLXB96S") //root
+//                        .password("root") //root
 //                        .roles("USER","ADMIN")
 //                        .build();
 //
 //        return new InMemoryUserDetailsManager(user, admin);
-    }
+//    }
+
 }

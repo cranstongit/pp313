@@ -57,13 +57,13 @@ public class User implements UserDetails {
    )
    private Set<Role> roles;
 
-   private final boolean isAccountNonExpired;
+   private boolean isAccountNonExpired;
 
-   private final boolean isAccountNonLocked;
+   private boolean isAccountNonLocked;
 
-   private final boolean isCredentialsNonExpired;
+   private boolean isCredentialsNonExpired;
 
-   private final boolean isEnabled;
+   private boolean isEnabled;
 
    public User() {}
    
@@ -74,7 +74,9 @@ public class User implements UserDetails {
       this.username = username;
    }
 
-   public User(String firstName, String lastName, String email, String username, boolean isAccountNonExpired, boolean isAccountNonLocked, boolean isCredentialsNonExpired, boolean isEnabled) {
+   public User(String firstName, String lastName, String email,
+               String username, boolean isAccountNonExpired,
+               boolean isAccountNonLocked, boolean isCredentialsNonExpired, boolean isEnabled) {
       this.firstName = firstName;
       this.lastName = lastName;
       this.email = email;

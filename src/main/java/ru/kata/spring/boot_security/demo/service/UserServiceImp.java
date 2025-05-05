@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -57,18 +56,18 @@ public class UserServiceImp implements UserService, UserDetailsService {
    }
 
    @Override
+   public UserDetails loadUserByUsername(String username) {
+      UserDetails foundUser = userDAOImpl.findByUsername(username);
+
+      if (foundUser == null)
+         throw new UsernameNotFoundException(username + " not found");
+
+      return foundUser;
+   }
+
+   @Override
    public List<User> findAll() {
       return userDAO.findAll();
    }
 
-   @Override
-   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//      Optional<User> user = userDAOImpl.findByUsername(String username);
-//
-//      if (user.isEmpty())
-//         throw new UsernameNotFoundException("username не найден.");
-//
-//      return new user.get();
-      return null;
-   }
 }
