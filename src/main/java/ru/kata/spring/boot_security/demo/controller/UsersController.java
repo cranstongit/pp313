@@ -24,7 +24,7 @@ public class UsersController {
     }
 
     @GetMapping (value = "/user")//browser address
-    public String printUsers(ModelMap model) {
+    public String printUsers() {//ModelMap model) {
         return "user";
 //        model.addAttribute("getUsers", userService.findAll()); //attribute in the index.html
 //        return "index"; //spring will be looking for an index.html file

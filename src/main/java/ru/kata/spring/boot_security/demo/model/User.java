@@ -57,6 +57,14 @@ public class User implements UserDetails {
    )
    private Set<Role> roles;
 
+   private final boolean isAccountNonExpired;
+
+   private final boolean isAccountNonLocked;
+
+   private final boolean isCredentialsNonExpired;
+
+   private final boolean isEnabled;
+
    public User() {}
    
    public User(String firstName, String lastName, String email, String username) {
@@ -64,6 +72,17 @@ public class User implements UserDetails {
       this.lastName = lastName;
       this.email = email;
       this.username = username;
+   }
+
+   public User(String firstName, String lastName, String email, String username, boolean isAccountNonExpired, boolean isAccountNonLocked, boolean isCredentialsNonExpired, boolean isEnabled) {
+      this.firstName = firstName;
+      this.lastName = lastName;
+      this.email = email;
+      this.username = username;
+      this.isAccountNonLocked = isAccountNonLocked;
+      this.isAccountNonExpired = isAccountNonExpired;
+      this.isCredentialsNonExpired = isCredentialsNonExpired;
+      this.isEnabled = isEnabled;
    }
 
    public Long getId() {
@@ -132,22 +151,22 @@ public class User implements UserDetails {
 
    @Override
    public boolean isAccountNonExpired() {
-      return true;
+      return isAccountNonExpired;
    }
 
    @Override
    public boolean isAccountNonLocked() {
-      return true;
+      return isAccountNonLocked;
    }
 
    @Override
    public boolean isCredentialsNonExpired() {
-      return true;
+      return isCredentialsNonExpired;
    }
 
    @Override
    public boolean isEnabled() {
-      return true;
+      return isEnabled;
    }
 
    @Override

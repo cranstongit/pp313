@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
+import java.util.concurrent.TimeUnit;
+
 @Configuration //убрать потом
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -31,16 +33,30 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-//                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-//                .and()
+                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and()
                 .authorizeRequests()
                 .antMatchers("/", "/index", "/css/*", "/js/*").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/user/**").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
-                .formLogin();
-//                .successHandler(successUserHandler)
+                .formLogin()
+                    .loginPage("/login").permitAll()//.successHandler(successUserHandler)
+                .and()
+                .rememberMe()
+                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
+                    .key("securitything")
+                .and()
+                .logout()
+                    .logoutUrl("/logout")
+                    .clearAuthentication(true)
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID", "remember-me")
+                    .logoutSuccessUrl("/");
+//                .permitAll();
+
+//
 
 //                .formLogin().successHandler(successUserHandler)
 //                .permitAll()
@@ -55,14 +71,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public UserDetailsService userDetailsService() { //сервис для получения пользователя из БД
         UserDetails alexUser = User.builder()
                 .username("alex")
-                .password("password")
+                .password("123")
 //                .password(passwordEncoder.encode("password"))
                 .roles("USER") //ROLE_USER
                 .build();
 
         UserDetails adminUser = User.builder()
                 .username("admin")
-                .password(passwordEncoder.encode("adminpassword"))
+                .password(passwordEncoder.encode("root"))
                 .roles("ADMIN") //ROLE_ADMIN
                 .build();
 

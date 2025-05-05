@@ -6,11 +6,11 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 
 @Controller
 @RequestMapping("/")
-public class AdminController {
+public class AdminsController {
 
     private final UserService userService;
 
-    public AdminController(UserService userService) {
+    public AdminsController(UserService userService) {
         this.userService = userService;
     }
 
