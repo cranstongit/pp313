@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Principal;
+
 @Controller
 @RequestMapping("/")
 public class UsersController {
@@ -24,7 +26,7 @@ public class UsersController {
     }
 
     @GetMapping (value = "/user")//browser address
-    public String printUsers() {//ModelMap model) {
+    public String printUsers(Principal principal) {//ModelMap model) {
         return "user";
 //        model.addAttribute("getUsers", userService.findAll()); //attribute in the index.html
 //        return "index"; //spring will be looking for an index.html file

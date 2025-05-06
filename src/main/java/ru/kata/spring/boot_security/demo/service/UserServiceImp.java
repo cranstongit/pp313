@@ -17,11 +17,9 @@ import java.util.List;
 public class UserServiceImp implements UserService, UserDetailsService {
 
    private final UserDAO userDAO;
-   private final UserDAOImpl userDAOImpl;
 
-   public UserServiceImp(UserDAO userDAO, UserDAOImpl userDAOImpl) {
+   public UserServiceImp(UserDAO userDAO) {
       this.userDAO = userDAO;
-      this.userDAOImpl = userDAOImpl;
    }
 
    @Transactional
@@ -57,7 +55,7 @@ public class UserServiceImp implements UserService, UserDetailsService {
 
    @Override
    public UserDetails loadUserByUsername(String username) {
-      UserDetails foundUser = userDAOImpl.findByUsername(username);
+      UserDetails foundUser = userDAO.findByUsername(username);
 
       if (foundUser == null)
          throw new UsernameNotFoundException(username + " not found");

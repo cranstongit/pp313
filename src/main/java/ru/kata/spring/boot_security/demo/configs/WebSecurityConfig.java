@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.configs;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -25,32 +26,32 @@ import java.util.concurrent.TimeUnit;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final SuccessUserHandler successUserHandler;
-    private final UserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder;
+//    private final SuccessUserHandler successUserHandler;
+//    private UserDetailsService userDetailsService;
+//    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public WebSecurityConfig(SuccessUserHandler successUserHandler,
-                             UserDetailsService userDetailService, PasswordEncoder passwordEncoder) {
-        this.successUserHandler = successUserHandler;
-        this.userDetailsService = userDetailService;
-        this.passwordEncoder = passwordEncoder;
-    }
+//    @Autowired
+//    public WebSecurityConfig(SuccessUserHandler successUserHandler,
+//                             UserDetailsService userDetailService, PasswordEncoder passwordEncoder) {
+//        this.successUserHandler = successUserHandler;
+////        this.userDetailsService = userDetailService;
+//        this.passwordEncoder = passwordEncoder;
+//    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                  .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 //                .sessionManagement().sessionCreationPolicy(sessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .antMatchers("/", "/index", "/css/*", "/js/*").permitAll()
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/**").hasRole("USER")
+//                .antMatchers("/admin/**").hasRole("ADMIN")
+//                .antMatchers("/user/**").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                    .loginPage("/login").permitAll()//.successHandler(successUserHandler)
+                    .loginPage("/login")//.successHandler(successUserHandler)
                 .and()
                 .rememberMe()
                     .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
@@ -61,8 +62,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .clearAuthentication(true)
                     .invalidateHttpSession(true)
                     .deleteCookies("JSESSIONID", "remember-me")
-                    .logoutSuccessUrl("/");
-//                .permitAll();
+                    .logoutSuccessUrl("/")
+                .permitAll();
 
 //
 
@@ -73,23 +74,37 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .permitAll();
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(daoAuthenticationProvider());
-    }
+    
+
+
+    //@Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.authenticationProvider(daoAuthenticationProvider());
+//    }
+
+    //@Bean
+//    public DaoAuthenticationProvider daoAuthenticationProvider() {
+//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+//        provider.setPasswordEncoder(passwordEncoder);
+//        provider.setUserDetailsService(userDetailsService);
+//        return provider;
+//    }
 
     @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder);
-        provider.setUserDetailsService(userDetailsService);
-        return provider;
+    public UserDetailsService users() {
+        UserDetails admin = User.builder()
+                .username("admin")
+                .password("{bcrypt}$2a$12$9PJXDPSYjhOlT81N5EHU1eKLUrYFIn6dBlZRUyVSz3jyFbtjiETdq") //admin
+                .roles("ADMIN", "USER")
+                .build();
+
+        return new InMemoryUserDetailsManager(admin);
     }
 
     // аутентификация inMemory
 //    @Bean
-//    @Override
-//    public UserDetailsService userDetailsService() { //сервис для получения пользователя из БД
+    //@Override
+//    public UserDetailsService users() {// userDetailsService() { //сервис для получения пользователя из БД
 //        UserDetails alexUser = User.builder()
 //                .username("alex")
 //                .password("123")
@@ -99,7 +114,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //
 //        UserDetails adminUser = User.builder()
 //                .username("admin")
-//                .password(passwordEncoder.encode("root"))
+//                .password("{bcrypt}$2a$12$9PJXDPSYjhOlT81N5EHU1eKLUrYFIn6dBlZRUyVSz3jyFbtjiETdq")(passwordEncoder.encode("root"))
 //                .roles("ADMIN") //ROLE_ADMIN
 //                .build();
 //
