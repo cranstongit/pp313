@@ -21,41 +21,41 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.util.concurrent.TimeUnit;
 
-@Configuration //убрать потом
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@Configuration //оставляем т.к. есть и другие бины
+@EnableWebSecurity // включает механизм Spring Security
+@EnableGlobalMethodSecurity(prePostEnabled = true) //для использования аннотации (@PreAuthorize("hasRole('ADMIN')") и др.) на уровне методов в сервисах/контроллерах
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    //WebSecurityConfigurerAdapter - абстрактный класс, чтобы переопределить настройки безопасности, в старых версиях Spring Security (до 5.7) это рекомендуемый способ настройки.
 
-//    private final SuccessUserHandler successUserHandler;
+    private final SuccessUserHandler successUserHandler;
 //    private UserDetailsService userDetailsService;
 //    private final PasswordEncoder passwordEncoder;
 
-//    @Autowired
-//    public WebSecurityConfig(SuccessUserHandler successUserHandler,
+    public WebSecurityConfig(SuccessUserHandler successUserHandler) {//,
 //                             UserDetailsService userDetailService, PasswordEncoder passwordEncoder) {
-//        this.successUserHandler = successUserHandler;
-////        this.userDetailsService = userDetailService;
+        this.successUserHandler = successUserHandler;
+//        this.userDetailsService = userDetailService;
 //        this.passwordEncoder = passwordEncoder;
-//    }
+    }
 
+    //Со Spring Security 5.7 использование configure - deprecated. Теперь используют SecurityFilterChainpublic SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    protected void configure(HttpSecurity http) throws Exception { //HttpSecurity - флюент-объект для описания цепочки фильтров безопасности.
         http
-                  .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-//                .sessionManagement().sessionCreationPolicy(sessionCreationPolicy.STATELESS)
-                .and()
+                .csrf().disable() // по умолчанию, csrf токен хранится в HttpSession, а не в cookie, указывать не обязательно
+//                .and()
                 .authorizeRequests()
-                .antMatchers("/", "/index", "/css/*", "/js/*").permitAll()
-//                .antMatchers("/admin/**").hasRole("ADMIN")
-//                .antMatchers("/user/**").hasRole("USER")
+                .antMatchers("/", "/index", "/css/*", "/js/*").permitAll() //эти пути открыты для всех
+                .antMatchers("/admin/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/user/**").hasRole("USER") //.hasRole("USER") автоматически ищет "ROLE_USER"
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                    .loginPage("/login")//.successHandler(successUserHandler)
+                    .loginPage("/login").successHandler(successUserHandler).permitAll()
                 .and()
                 .rememberMe()
-                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
-                    .key("securitything")
+                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21)) //выставляем длительность сессии
+                    .key("alex!Security@Token#Encryption") //ключ для шифрования remember-me токена, который Spring хранит в cookie
                 .and()
                 .logout()
                     .logoutUrl("/logout")
@@ -64,18 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .deleteCookies("JSESSIONID", "remember-me")
                     .logoutSuccessUrl("/")
                 .permitAll();
-
-//
-
-//                .formLogin().successHandler(successUserHandler)
-//                .permitAll()
-//                .and()
-//                .logout()
-//                .permitAll();
     }
-
-    
-
 
     //@Override
 //    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
