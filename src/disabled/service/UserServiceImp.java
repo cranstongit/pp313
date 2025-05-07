@@ -4,7 +4,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import ru.kata.spring.boot_security.demo.dao.UserDAO;
-import ru.kata.spring.boot_security.demo.dao.UserDAOImpl;
 import ru.kata.spring.boot_security.demo.model.User;
 import javax.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;

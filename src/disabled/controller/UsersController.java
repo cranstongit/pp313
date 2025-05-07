@@ -1,36 +1,36 @@
-package ru.kata.spring.boot_security.demo.controller;
-
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
-import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.service.UserService;
-import javax.persistence.EntityNotFoundException;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.security.Principal;
-
-@Controller
-@RequestMapping("/")
-public class UsersController {
-
-    private final UserService userService;
-
-    public UsersController(UserService userService) {
-        this.userService = userService;
-    }
-
-    @GetMapping (value = "/user")//browser address
-    public String printUsers(Principal principal) {//ModelMap model) {
-        return "user";
+//package ru.kata.spring.boot_security.demo.controller;
+//
+//import org.springframework.web.bind.annotation.RequestMethod;
+//import org.springframework.web.servlet.ModelAndView;
+//import ru.kata.spring.boot_security.demo.model.User;
+//import ru.kata.spring.boot_security.demo.service.UserService;
+//import javax.persistence.EntityNotFoundException;
+//import org.springframework.stereotype.Controller;
+//import org.springframework.ui.ModelMap;
+//import org.springframework.web.bind.annotation.GetMapping;
+//import org.springframework.web.bind.annotation.ModelAttribute;
+//import org.springframework.web.bind.annotation.PostMapping;
+//import org.springframework.web.bind.annotation.RequestMapping;
+//import org.springframework.web.bind.annotation.RequestParam;
+//
+//import java.security.Principal;
+//
+//@Controller
+//@RequestMapping("/")
+//public class UsersController {
+//
+//    private final UserService userService;
+//
+//    public UsersController(UserService userService) {
+//        this.userService = userService;
+//    }
+//
+//    @GetMapping (value = "/user")//browser address
+//    public String printUsers(Principal principal) {//ModelMap model) {
+//        return "user";
 //        model.addAttribute("getUsers", userService.findAll()); //attribute in the index.html
 //        return "index"; //spring will be looking for an index.html file
-    }
+//    }
 
 //    @RequestMapping(value="/admin", method = RequestMethod.GET)
 //    public ModelAndView visitAdmin() {
@@ -89,4 +89,4 @@ public class UsersController {
 //        return "/404";
 //    }
 
-}
+//}

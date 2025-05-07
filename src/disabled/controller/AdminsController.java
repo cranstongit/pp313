@@ -1,18 +1,18 @@
-package ru.kata.spring.boot_security.demo.controller;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import ru.kata.spring.boot_security.demo.service.UserService;
-
-@Controller
-@RequestMapping("/")
-public class AdminsController {
-
-    private final UserService userService;
-
-    public AdminsController(UserService userService) {
-        this.userService = userService;
-    }
+//package ru.kata.spring.boot_security.demo.controller;
+//
+//import org.springframework.stereotype.Controller;
+//import org.springframework.web.bind.annotation.RequestMapping;
+//import ru.kata.spring.boot_security.demo.service.UserService;
+//
+//@Controller
+//@RequestMapping("/")
+//public class AdminsController {
+//
+//    private final UserService userService;
+//
+//    public AdminsController(UserService userService) {
+//        this.userService = userService;
+//    }
 
 //    @GetMapping (value = "/admin")//browser address
 //    //@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -78,4 +78,4 @@ public class AdminsController {
 //        return "/404";
 //    }
 
-}
+//}

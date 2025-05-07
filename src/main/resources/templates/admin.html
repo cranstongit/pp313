@@ -3,32 +3,34 @@
 <html xmlns:c="http://www.w3.org/1999/XSL/Transform">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <title>Spring Security Basic Demo (Java Config)</title>
+    <title>Admin page</title>
 </head>
 <body>
-<div align="center">
-    <h1>${title}</h1>
-    <h2>${message}</h2>
-    <c:if test="${pageContext.request.userPrincipal.name != null}">
-        <h2>Welcome : ${pageContext.request.userPrincipal.name} |
-            <a href="/<c:url value=/logout" />" > Logout</a></h2> //??????????????
-    </c:if>
-</div>
-<div th:if="${getUsers}">
-    <h2>?????? ?????????????:</h2>
-    <div th:each="user : ${getUsers}">
-        <p th:text="'User ID: ' + ${user.getId()} + ', First name: ' + ${user.getFirstName()} + ', Last name: '
-        + ${user.getLastName()} + ', E-mail: ' + ${user.getEmail()}">List of Users</p>
-    </div>
-    <br/>
-    <a th:href="@{/deleteuser}">??????? ????????????</a>
-    <br/>
-    <br/>
-    <a th:href="@{/newuser}">??????? ????????????</a>
-    <br/>
-    <br/>
-    <a th:href="@{/edituser}">??????????????? ????????????</a>
-</div>
+    <h2>Admin information:</h2>
+
+<!--<div align="center">-->
+<!--    <h1>${title}</h1>-->
+<!--    <h2>${message}</h2>-->
+<!--    <c:if test="${pageContext.request.userPrincipal.name != null}">-->
+<!--        <h2>Welcome : ${pageContext.request.userPrincipal.name} |-->
+<!--            <a href="/<c:url value=/logout" />" > Logout</a></h2> //??????????????-->
+<!--    </c:if>-->
+<!--</div>-->
+<!--<div th:if="${getUsers}">-->
+<!--    <h2>?????? ?????????????:</h2>-->
+<!--    <div th:each="user : ${getUsers}">-->
+<!--        <p th:text="'User ID: ' + ${user.getId()} + ', First name: ' + ${user.getFirstName()} + ', Last name: '-->
+<!--        + ${user.getLastName()} + ', E-mail: ' + ${user.getEmail()}">List of Users</p>-->
+<!--    </div>-->
+<!--    <br/>-->
+<!--    <a th:href="@{/deleteuser}">??????? ????????????</a>-->
+<!--    <br/>-->
+<!--    <br/>-->
+<!--    <a th:href="@{/newuser}">??????? ????????????</a>-->
+<!--    <br/>-->
+<!--    <br/>-->
+<!--    <a th:href="@{/edituser}">??????????????? ????????????</a>-->
+<!--</div>-->
 
 </body>
 </html>
