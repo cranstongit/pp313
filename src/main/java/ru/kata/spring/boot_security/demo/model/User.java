@@ -14,8 +14,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -29,63 +27,45 @@ public class User implements UserDetails {
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
 
-   @Column(name = "first_name")
+   @Column(name = "first_name", nullable = false, length = 100)
    private String firstName;
 
-   @Column(name = "last_name")
+   @Column(name = "last_name", nullable = false, length = 100)
    private String lastName;
 
-   @Column(name = "email")
+   @Column(name = "email", nullable = false, length = 100)
    private String email;
 
-   @NotEmpty(message = "Имя пользователя не должно быть пустым")
-   @Size(min = 5, max = 100, message = "Имя пользователя должно быть от 5 до 100 символов")
-   @Column(name = "username")
+   @Column(name = "username", nullable = false, length = 100)
    private String username;
 
-   @Column(name = "password")
+   @Column(name = "password", nullable = false, length = 100)
    private String password;
 
-   @Transient
-   private String passwordCheck;
-
-   @ManyToMany(fetch = FetchType.LAZY)
+   @ManyToMany(fetch = FetchType.EAGER)
    @JoinTable(
            name = "users_roles",
            joinColumns = @JoinColumn(name = "user_id"),
            inverseJoinColumns = @JoinColumn(name = "role_id")
    )
+
    private Set<Role> roles;
 
-   private boolean isAccountNonExpired;
+   @Transient
+   private String roleNames; // строка из формы создания или обновления пользователей для установки ролей
 
-   private boolean isAccountNonLocked;
-
-   private boolean isCredentialsNonExpired;
-
-   private boolean isEnabled;
 
    public User() {}
-   
-   public User(String firstName, String lastName, String email, String username) {
+
+   public User(String username, String password, String firstName, String lastName, String email, Set<Role> roles) {
+      this.username = username;
+      this.password = password;
       this.firstName = firstName;
       this.lastName = lastName;
       this.email = email;
-      this.username = username;
+      this.roles = roles;
    }
 
-   public User(String firstName, String lastName, String email,
-               String username, boolean isAccountNonExpired,
-               boolean isAccountNonLocked, boolean isCredentialsNonExpired, boolean isEnabled) {
-      this.firstName = firstName;
-      this.lastName = lastName;
-      this.email = email;
-      this.username = username;
-      this.isAccountNonLocked = isAccountNonLocked;
-      this.isAccountNonExpired = isAccountNonExpired;
-      this.isCredentialsNonExpired = isCredentialsNonExpired;
-      this.isEnabled = isEnabled;
-   }
 
    public Long getId() {
       return id;
@@ -95,6 +75,7 @@ public class User implements UserDetails {
       this.id = id;
    }
 
+
    public String getFirstName() {
       return firstName;
    }
@@ -102,6 +83,7 @@ public class User implements UserDetails {
    public void setFirstName(String firstName) {
       this.firstName = firstName;
    }
+
 
    public String getLastName() {
       return lastName;
@@ -111,6 +93,7 @@ public class User implements UserDetails {
       this.lastName = lastName;
    }
 
+
    public String getEmail() {
       return email;
    }
@@ -118,6 +101,7 @@ public class User implements UserDetails {
    public void setEmail(String email) {
       this.email = email;
    }
+
 
    public String getUsername() {
       return username;
@@ -127,6 +111,7 @@ public class User implements UserDetails {
       this.username = username;
    }
 
+
    public String getPassword() {
       return password;
    }
@@ -135,13 +120,6 @@ public class User implements UserDetails {
       this.password = password;
    }
 
-   public String getPasswordCheck() {
-      return passwordCheck;
-   }
-
-   public void setPasswordCheck(String passwordCheck) {
-      this.passwordCheck = passwordCheck;
-   }
 
    public Set<Role> getRoles() {
       return roles;
@@ -151,45 +129,54 @@ public class User implements UserDetails {
       this.roles = roles;
    }
 
+
+   public String getRoleNames() {
+      return roleNames;
+   }
+
+   public void setRoleNames(String roleNames) {
+      this.roleNames = roleNames;
+   }
+
+
    @Override
    public boolean isAccountNonExpired() {
-      return isAccountNonExpired;
+      return true;
    }
 
    @Override
    public boolean isAccountNonLocked() {
-      return isAccountNonLocked;
+      return true;
    }
 
    @Override
    public boolean isCredentialsNonExpired() {
-      return isCredentialsNonExpired;
+      return true;
    }
 
    @Override
    public boolean isEnabled() {
-      return isEnabled;
+      return true;
    }
+
 
    @Override
    public Collection<? extends GrantedAuthority> getAuthorities() {
-      return getRoles();
+      return roles;
    }
+
 
    @Override
    public boolean equals(Object o) {
+      if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       User user = (User) o;
-      return Objects.equals(getId(), user.getId()) &&
-              Objects.equals(getFirstName(), user.getFirstName()) &&
-              Objects.equals(getLastName(), user.getLastName()) &&
-              Objects.equals(getEmail(), user.getEmail()) &&
-              Objects.equals(getUsername(), user.getUsername());
+      return Objects.equals(id, user.id);
    }
 
    @Override
    public int hashCode() {
-      return 31 * Objects.hash(getId(), getFirstName(), getLastName(), getEmail(), getUsername());
+      return 31 * Objects.hash(id);
    }
 
    @Override

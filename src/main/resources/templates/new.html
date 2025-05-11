@@ -5,19 +5,39 @@
     <title>New user</title>
 </head>
 <body>
-<form th:method="POST" th:action="@{/newuser}" th:object="${newUser}">
-    <label for="firstName">Enter first name: </label>
-    <input type="text" th:field="*{firstName}" id="firstName"/>
+    <h3>Create a new user</h3>
     <br/>
-    <label for="lastName">Enter last name: </label>
-    <input type="text" th:field="*{lastName}" id="lastName"/>
+    <form th:method="POST" th:action="@{/admin/newuser}" th:object="${newUser}">
+        <label for="username">*Enter username: </label>
+        <input type="text" th:field="*{username}" id="username"/>
+        <br/>
+        <label for="password">*Enter password: </label>
+        <input type="text" th:field="*{password}" id="password"/>
+        <br/>
+        <label for="firstName">Enter first name: </label>
+        <input type="text" th:field="*{firstName}" id="firstName"/>
+        <br/>
+        <label for="lastName">Enter last name: </label>
+        <input type="text" th:field="*{lastName}" id="lastName"/>
+        <br/>
+        <label for="email">Enter e-mail: </label>
+        <input type="text" th:field="*{email}" id="email"/>
+        <br/>
+        <label for="roleNames">*/**Enter roles: </label>
+        <input type="text" th:field="*{roleNames}" id="roleNames"/>
+        <br/>
+        <input type="submit" value="Add new User">
+    </form>
+    <p>*Поля являются обязательными!</p>
+    <p>**Введите одну или несколько ролей (через запятую) в верхнем регистре, начиная с ROLE_</p>
     <br/>
-    <label for="email">Enter e-mail: </label>
-    <input type="text" th:field="*{email}" id="email"/>
+    <a th:href="@{/admin}">Список пользователей</a>
     <br/>
-    <input type="submit" value="Add new User">
-</form>
-<br/>
-<a th:href="@{/}">Список пользователей</a>
+    <br/>
+    <a th:href="@{/}">Главная страница</a>
+    <br/>
+    <a th:href="@{/login}">Войти в аккаунт</a>
+    <br/>
+    <a th:href="@{/logout}">Выйти из аккаунта</a>
 </body>
 </html>

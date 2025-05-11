@@ -2,23 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ERROR 404</title>
+    <title>Error Page</title>
 </head>
 <body>
-<div>
-    <h2>Error 404</h2>
     <div>
-        <p th:text="'Error message: ' + ${errorMessage}">Error message</p>
+        <h2>Error page</h2>
+        <br/>
+        <div>
+            <p th:text="'Error message: ' + ${errorMessage}">Error message</p>
+        </div>
+        <br/>
+        <br/>
+        <a th:href="@{/}">Главная страница</a>
+        <br/>
+        <a th:href="@{/login}">Войти в аккаунт</a>
+        <br/>
+        <a th:href="@{/logout}">Выйти из аккаунта</a>
     </div>
-    <br/>
-    <br/>
-    <a th:href="@{/}">Список пользователей</a>
-    <br/>
-    <br/>
-    <a th:href="@{/deleteuser}">Удалить пользователя</a>
-    <br/>
-    <br/>
-    <a th:href="@{/edituser}">Отредактировать пользователя</a>
-</div>
 </body>
 </html>
