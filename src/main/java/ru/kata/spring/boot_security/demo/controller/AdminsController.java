@@ -54,6 +54,7 @@ public class AdminsController {
     @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
     public String createUser(ModelMap model) {
         model.addAttribute("newUser", new User());
+        model.addAttribute("allRoles", roleService.findAll()); // Добавим роли
         return "new";
     }
 
@@ -61,10 +62,11 @@ public class AdminsController {
     @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
     public String newUser(@ModelAttribute("newUser") User user, ModelMap model) {
 
-        Set<Role> roles = roleService.parseAndValidateRoles(user.getRoleNames());
+        Set<Role> roles = roleService.findByIds(user.getRoleIds()); // метод получения ролей по id
+//        Set<Role> roles = roleService.parseAndValidateRoles(user.getRoleNames());
 
-        if (roles == null) {
-            model.addAttribute("errorMessage", "Роль не найдена в базе.");
+        if (roles == null || roles.isEmpty()) {
+            model.addAttribute("errorMessage", "Роли не выбраны или не найдены.");
             return "404";
         }
 
@@ -100,36 +102,36 @@ public class AdminsController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/edituser")
-    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
-    public String changeUser(ModelMap model) {
-        model.addAttribute("updateUser", new User());
-        return "edit";
-    }
-
-    @PostMapping("/edituser")
-    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
-    public String updateUser(@RequestParam("id") long id,
-                             @ModelAttribute("updateUser") User user, ModelMap model) {
-
-        String roleNames = user.getRoleNames();
-        Set<Role> roles = roleService.parseAndValidateRoles(roleNames);
-
-        if (roleNames != null && !roleNames.isBlank() && roles == null) {
-            model.addAttribute("errorMessage", "Роль не найдена в БД");
-            return "404";
-        }
-
-        user.setRoles(roles);
-
-        try {
-            userService.update(id, user);
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("errorMessage", "Ошибка при изменении данных пользователя: " + e.getMessage());
-            return "404";
-        }
-
-        return "redirect:/admin";
-    }
+//    @GetMapping("/edituser")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
+//    public String changeUser(ModelMap model) {
+//        model.addAttribute("updateUser", new User());
+//        return "edit";
+//    }
+//
+//    @PostMapping("/edituser")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
+//    public String updateUser(@RequestParam("id") long id,
+//                             @ModelAttribute("updateUser") User user, ModelMap model) {
+//
+//        String roleNames = user.getRoleNames();
+//        Set<Role> roles = roleService.parseAndValidateRoles(roleNames);
+//
+//        if (roleNames != null && !roleNames.isBlank() && roles == null) {
+//            model.addAttribute("errorMessage", "Роль не найдена в БД");
+//            return "404";
+//        }
+//
+//        user.setRoles(roles);
+//
+//        try {
+//            userService.update(id, user);
+//        } catch (EntityNotFoundException e) {
+//            model.addAttribute("errorMessage", "Ошибка при изменении данных пользователя: " + e.getMessage());
+//            return "404";
+//        }
+//
+//        return "redirect:/admin";
+//    }
 
 }

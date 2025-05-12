@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -52,8 +53,11 @@ public class User implements UserDetails {
 
    private Set<Role> roles;
 
+//   @Transient
+//   private String roleNames; // строка из формы создания или обновления пользователей для установки ролей
+
    @Transient
-   private String roleNames; // строка из формы создания или обновления пользователей для установки ролей
+   private List<Long> roleIds;
 
 
    public User() {}
@@ -131,13 +135,17 @@ public class User implements UserDetails {
    }
 
 
-   public String getRoleNames() {
-      return roleNames;
-   }
+   public List<Long> getRoleIds() { return roleIds; }
 
-   public void setRoleNames(String roleNames) {
-      this.roleNames = roleNames;
-   }
+   public void setRoleIds(List<Long> roleIds) { this.roleIds = roleIds; }
+
+   //   public String getRoleNames() {
+//      return roleNames;
+//   }
+//
+//   public void setRoleNames(String roleNames) {
+//      this.roleNames = roleNames;
+//   }
 
 
    @Override
