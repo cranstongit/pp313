@@ -10,12 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Controller
@@ -23,9 +22,11 @@ import java.util.Set;
 public class AdminsController {
 
     private final UserService userService;
+    private final RoleService roleService;
 
-    public AdminsController(UserService userService) {
+    public AdminsController(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     @GetMapping({"/", ""})
@@ -60,7 +61,7 @@ public class AdminsController {
     @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
     public String newUser(@ModelAttribute("newUser") User user, ModelMap model) {
 
-        Set<Role> roles = parseAndValidateRoles(user.getRoleNames());
+        Set<Role> roles = roleService.parseAndValidateRoles(user.getRoleNames());
 
         if (roles == null) {
             model.addAttribute("errorMessage", "Роль не найдена в базе.");
@@ -112,7 +113,7 @@ public class AdminsController {
                              @ModelAttribute("updateUser") User user, ModelMap model) {
 
         String roleNames = user.getRoleNames();
-        Set<Role> roles = parseAndValidateRoles(roleNames);
+        Set<Role> roles = roleService.parseAndValidateRoles(roleNames);
 
         if (roleNames != null && !roleNames.isBlank() && roles == null) {
             model.addAttribute("errorMessage", "Роль не найдена в БД");
@@ -129,32 +130,6 @@ public class AdminsController {
         }
 
         return "redirect:/admin";
-    }
-
-    private Set<Role> parseAndValidateRoles(String roleNames) {
-
-        if (roleNames == null || roleNames.isBlank()) {
-            return null; // null и возвращаем
-        }
-
-        Set<Role> allRoles = userService.resolvedRoles(); // получаем все роли из БД
-        String[] inputRoles = roleNames.split(","); //переводим в массив ролей
-        Set<Role> resolvedRoles = new HashSet<>(); // создаем новый список присваиваемых ролей
-
-        for (String inputRole : inputRoles) {
-            String trimmed = inputRole.trim(); // убираем пробелы по краям
-            Optional<Role> matchedRole = allRoles.stream() //проверяем наличие роли из массива в списке полученных ролей
-                    .filter(r -> r.getRoleName().equalsIgnoreCase(trimmed))
-                    .findFirst();
-
-            if (matchedRole.isPresent()) {
-                resolvedRoles.add(matchedRole.get());
-            } else {
-                return null; // если подходящих ролей нет, то возвращаем null
-            }
-        }
-
-        return resolvedRoles;
     }
 
 }

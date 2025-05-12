@@ -5,7 +5,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import ru.kata.spring.boot_security.demo.dao.UserDAO;
+import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 
@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
-   private final UserDAO userDAO;
+   private final UserDao userDao;
    private final PasswordEncoder passwordEncoder;
 
-   public UserServiceImpl(UserDAO userDAO, PasswordEncoder passwordEncoder) {
-      this.userDAO = userDAO;
+   public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder) {
+      this.userDao = userDao;
       this.passwordEncoder = passwordEncoder;
    }
 
@@ -34,14 +34,14 @@ public class UserServiceImpl implements UserService {
    @Override
    public void save(User user) {
       user.setPassword(passwordEncoder.encode(user.getPassword()));
-      userDAO.save(user);
+      userDao.save(user);
    }
 
    @Transactional
    @Override
    public void update(long id, User user) {
 
-      User existingUser = userDAO.find(id);
+      User existingUser = userDao.find(id);
 
       if (existingUser == null) {
          throw new EntityNotFoundException("User with id " + id + " not found");
@@ -71,36 +71,36 @@ public class UserServiceImpl implements UserService {
          existingUser.setRoles(user.getRoles());
       }
 
-      userDAO.save(existingUser);
+      userDao.save(existingUser);
    }
 
    @Transactional
    @Override
    public void delete(long id) {
 
-      User existingUser = userDAO.find(id);
+      User existingUser = userDao.find(id);
 
       if (existingUser == null) {
          throw new EntityNotFoundException("User with id " + id + " not found");
       }
 
-      userDAO.delete(id);
+      userDao.delete(id);
    }
 
    @Override
    public List<User> findAll() {
-      return userDAO.findAll();
+      return userDao.findAll();
    }
 
    @Override
    public User findByUsername(String username) {
-      return userDAO.findByUsername(username);
+      return userDao.findByUsername(username);
    }
 
    @Override
    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-      User foundUser = userDAO.findByUsername(username);
+      User foundUser = userDao.findByUsername(username);
 
       if (foundUser == null)
          throw new UsernameNotFoundException(username + " not found");
@@ -112,11 +112,6 @@ public class UserServiceImpl implements UserService {
 
    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<Role> roles) {
       return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toList());
-   }
-
-   @Override
-   public Set<Role> resolvedRoles() {
-      return userDAO.resolvedRoles();
    }
 
 }

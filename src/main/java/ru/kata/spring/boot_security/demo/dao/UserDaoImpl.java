@@ -1,18 +1,15 @@
 package ru.kata.spring.boot_security.demo.dao;
 
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Repository
-public class UserDAOImpl implements UserDAO {
+public class UserDaoImpl implements UserDao {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -29,7 +26,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public List<User> findAll() {
-        return entityManager.createQuery("select u from User u", User.class).getResultList();
+        return entityManager.createQuery("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles", User.class).getResultList();
     }
 
     @Override
@@ -40,17 +37,12 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public User findByUsername(String username) {
         try {
-            return entityManager.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class)
+            return entityManager.createQuery("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.username = :username", User.class)
                 .setParameter("username", username)
                 .getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
-    }
-
-    @Override
-    public Set<Role> resolvedRoles() {
-        return new HashSet<>(entityManager.createQuery("SELECT r FROM Role r", Role.class).getResultList());
     }
 
 }
