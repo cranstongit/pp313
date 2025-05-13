@@ -5,7 +5,7 @@
     <title>New user</title>
 </head>
 <body>
-    <h3>Create a new user</h3>
+    <h3>Create a new user:</h3>
     <br/>
     <form th:method="POST" th:action="@{/admin/newuser}" th:object="${newUser}">
         <label for="username">*Enter username: </label>
@@ -23,7 +23,7 @@
         <label for="email">Enter e-mail: </label>
         <input type="text" th:field="*{email}" id="email"/>
         <br/>
-        <label>*Выберите роли:</label><br/>
+        <label>*Выберите одну или несколько ролей:</label><br/>
         <div th:each="role : ${allRoles}">
 <!--  в значение чекбокса, в value записываем id роли, если выбрать чекбокс с value="2", то при отправке формы это значение (2) будет включено в список значений поля roleIds-->
 <!--  value чекбоксов (т.е. ID ролей) связывается с полем roleIds из объекта формы th:object="${newUser} (а точнее newUser.roleIds)   -->
@@ -34,8 +34,7 @@
         <br/>
         <input type="submit" value="Add new User">
     </form>
-    <p>*Поля являются обязательными!</p>
-    <p>**Введите одну или несколько ролей (через запятую) в верхнем регистре, начиная с ROLE_</p>
+    <p>*Поля являются обязательными</p>
     <br/>
     <a th:href="@{/admin}">Список пользователей</a>
     <br/>

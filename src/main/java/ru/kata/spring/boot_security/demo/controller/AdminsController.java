@@ -47,15 +47,19 @@ public class AdminsController {
 
     @GetMapping("/404")
     public String showError(ModelMap model) {
+
         model.addAttribute("errorMessage", "Something went wrong");
+
         return "404";
     }
 
     @GetMapping("/newuser")
     @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
     public String createUser(ModelMap model) {
+
         model.addAttribute("newUser", new User());
         model.addAttribute("allRoles", roleService.findAll()); // Добавим роли
+
         return "new";
     }
 
@@ -64,7 +68,6 @@ public class AdminsController {
     public String newUser(@ModelAttribute("newUser") User user, ModelMap model) {
 
         Set<Role> roles = roleService.findByIds(user.getRoleIds()); // метод получения ролей по id
-//        Set<Role> roles = roleService.parseAndValidateRoles(user.getRoleNames());
 
         if (roles == null || roles.isEmpty()) {
             model.addAttribute("errorMessage", "Роли не выбраны или не найдены.");
@@ -103,16 +106,10 @@ public class AdminsController {
         return "redirect:/admin";
     }
 
-//    @GetMapping("/edituser")
-//    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
-//    public String changeUser(ModelMap model) {
-//        model.addAttribute("updateUser", new User());
-//        return "edit";
-//    }
-
     @GetMapping("/edituser/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")  //второй слой защиты
     public String editUserForm(@PathVariable("id") long id, ModelMap model) {
+
         User user = userService.find(id);
 
         if (user == null) {
@@ -122,6 +119,7 @@ public class AdminsController {
 
         model.addAttribute("updateUser", user);
         model.addAttribute("allRoles", roleService.findAll());
+
         return "user";
     }
 

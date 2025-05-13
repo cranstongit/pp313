@@ -15,11 +15,6 @@ public class RoleDaoImpl implements RoleDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-//    @Override
-//    public Set<Role> resolvedRoles() {
-//        return new HashSet<>(entityManager.createQuery("SELECT r FROM Role r", Role.class).getResultList());
-//    }
-
     @Override
     public Set<Role> findAll() {
         return new HashSet<>(entityManager

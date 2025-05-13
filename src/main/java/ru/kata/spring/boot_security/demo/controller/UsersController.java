@@ -21,6 +21,7 @@ public class UsersController {
 
     @GetMapping({"/", ""})
     public String visitUserPage(Principal principal, ModelMap model) {
+
         String username = principal.getName();
 
         User user = userService.findByUsername(username);
@@ -31,12 +32,15 @@ public class UsersController {
         }
 
         model.addAttribute("user", user);
+
         return "user";
     }
 
     @GetMapping("/404")
     public String showError(ModelMap model) {
+
         model.addAttribute("errorMessage", "Something went wrong");
+
         return "404";
     }
 

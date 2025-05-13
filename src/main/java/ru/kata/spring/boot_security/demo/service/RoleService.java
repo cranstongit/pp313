@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 public interface RoleService {
-//    Set<Role> resolvedRoles();
-//    Set<Role> parseAndValidateRoles(String roleNames);
     Set<Role> findAll();
     Set<Role> findByIds(List<Long> ids);
 }

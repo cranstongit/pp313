@@ -59,8 +59,6 @@ public class UserServiceImpl implements UserService {
          user.setPassword(existingUser.getPassword());
       }
 
-//      user.setId(id);
-
       userDao.merge(user);
    }
 

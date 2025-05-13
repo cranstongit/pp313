@@ -33,7 +33,7 @@
         </form>
     </div>
     <div th:if="${user}">
-        <sec:authorize access="hasRole('ROLE_USER') and !hasRole('ROLE_USER')">
+        <sec:authorize access="hasRole('ROLE_USER')">
             <p th:text="'User ID: ' + ${user.getId()}">Id</p>
             <p th:text="'First name: ' + ${user.getFirstName()}">First name</p>
             <p th:text="'Last name: ' + ${user.getLastName()}">Last name</p>
@@ -53,6 +53,8 @@
         <a th:href="@{/login}">Войти в аккаунт</a>
         <br/>
         <a th:href="@{/logout}">Выйти из аккаунта</a>
+        <br/>
+        <br/>
     </div>
 </body>
 </html>

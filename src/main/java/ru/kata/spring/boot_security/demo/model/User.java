@@ -53,9 +53,6 @@ public class User implements UserDetails {
 
    private Set<Role> roles;
 
-//   @Transient
-//   private String roleNames; // строка из формы создания или обновления пользователей для установки ролей
-
    @Transient
    private List<Long> roleIds;
 
@@ -138,14 +135,6 @@ public class User implements UserDetails {
    public List<Long> getRoleIds() { return roleIds; }
 
    public void setRoleIds(List<Long> roleIds) { this.roleIds = roleIds; }
-
-   //   public String getRoleNames() {
-//      return roleNames;
-//   }
-//
-//   public void setRoleNames(String roleNames) {
-//      this.roleNames = roleNames;
-//   }
 
 
    @Override
