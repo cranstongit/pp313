@@ -37,6 +37,11 @@ public class UserServiceImpl implements UserService {
       userDao.save(user);
    }
 
+   @Override
+   public User find(long id) {
+      return userDao.find(id);
+   }
+
    @Transactional
    @Override
    public void update(long id, User user) {
@@ -47,31 +52,16 @@ public class UserServiceImpl implements UserService {
          throw new EntityNotFoundException("User with id " + id + " not found");
       }
 
-      if (user.getFirstName() != null && !user.getFirstName().isBlank()) {
-         existingUser.setFirstName(user.getFirstName());
+      if (user.getPassword() != null && !user.getPassword().isBlank()
+              && !passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
+         user.setPassword(passwordEncoder.encode(user.getPassword()));
+      } else {
+         user.setPassword(existingUser.getPassword());
       }
 
-      if (user.getLastName() != null && !user.getLastName().isBlank()) {
-         existingUser.setLastName(user.getLastName());
-      }
+//      user.setId(id);
 
-      if (user.getEmail() != null && !user.getEmail().isBlank()) {
-         existingUser.setEmail(user.getEmail());
-      }
-
-      if (user.getUsername() != null && !user.getUsername().isBlank()) {
-         existingUser.setUsername(user.getUsername());
-      }
-
-      if (user.getPassword() != null && !user.getPassword().isBlank()) {
-         existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
-      }
-
-      if (user.getRoles() != null && !user.getRoles().isEmpty()) {
-         existingUser.setRoles(user.getRoles());
-      }
-
-      userDao.save(existingUser);
+      userDao.merge(user);
    }
 
    @Transactional

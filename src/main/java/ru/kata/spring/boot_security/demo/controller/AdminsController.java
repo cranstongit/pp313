@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -108,30 +109,39 @@ public class AdminsController {
 //        model.addAttribute("updateUser", new User());
 //        return "edit";
 //    }
-//
-//    @PostMapping("/edituser")
-//    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
-//    public String updateUser(@RequestParam("id") long id,
-//                             @ModelAttribute("updateUser") User user, ModelMap model) {
-//
-//        String roleNames = user.getRoleNames();
-//        Set<Role> roles = roleService.parseAndValidateRoles(roleNames);
-//
-//        if (roleNames != null && !roleNames.isBlank() && roles == null) {
-//            model.addAttribute("errorMessage", "Роль не найдена в БД");
-//            return "404";
-//        }
-//
-//        user.setRoles(roles);
-//
-//        try {
-//            userService.update(id, user);
-//        } catch (EntityNotFoundException e) {
-//            model.addAttribute("errorMessage", "Ошибка при изменении данных пользователя: " + e.getMessage());
-//            return "404";
-//        }
-//
-//        return "redirect:/admin";
-//    }
+
+    @GetMapping("/edituser/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")  //второй слой защиты
+    public String editUserForm(@PathVariable("id") long id, ModelMap model) {
+        User user = userService.find(id);
+
+        if (user == null) {
+            model.addAttribute("errorMessage", "Пользователь не найден");
+            return "404";
+        }
+
+        model.addAttribute("updateUser", user);
+        model.addAttribute("allRoles", roleService.findAll());
+        return "user";
+    }
+
+    @PostMapping("/edituser/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
+    public String updateUser(@PathVariable("id") long id,
+                             @ModelAttribute("updateUser") User user, ModelMap model) {
+
+        Set<Role> roles = roleService.findByIds(user.getRoleIds());
+
+        user.setRoles(roles);
+
+        try {
+            userService.update(id, user);
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("errorMessage", "Ошибка при изменении: " + e.getMessage());
+            return "404";
+        }
+
+        return "redirect:/admin";
+    }
 
 }

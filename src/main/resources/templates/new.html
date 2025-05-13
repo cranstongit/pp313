@@ -9,10 +9,10 @@
     <br/>
     <form th:method="POST" th:action="@{/admin/newuser}" th:object="${newUser}">
         <label for="username">*Enter username: </label>
-        <input type="text" th:field="*{username}" id="username"/>
+        <input type="text" th:field="*{username}" id="username" required />
         <br/>
         <label for="password">*Enter password: </label>
-        <input type="text" th:field="*{password}" id="password"/>
+        <input type="text" th:field="*{password}" id="password" required />
         <br/>
         <label for="firstName">Enter first name: </label>
         <input type="text" th:field="*{firstName}" id="firstName"/>
@@ -25,6 +25,9 @@
         <br/>
         <label>*Выберите роли:</label><br/>
         <div th:each="role : ${allRoles}">
+<!--  в значение чекбокса, в value записываем id роли, если выбрать чекбокс с value="2", то при отправке формы это значение (2) будет включено в список значений поля roleIds-->
+<!--  value чекбоксов (т.е. ID ролей) связывается с полем roleIds из объекта формы th:object="${newUser} (а точнее newUser.roleIds)   -->
+<!--  генерируется уникальный id для каждого чекбокса, например role_1   -->
             <input type="checkbox" th:value="${role.id}" th:field="*{roleIds}" th:id="${'role_' + role.id}"/>
             <label th:for="${'role_' + role.id}" th:text="${role.roleName}">ROLE</label><br/>
         </div>

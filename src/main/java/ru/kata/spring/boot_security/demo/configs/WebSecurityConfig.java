@@ -54,17 +54,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception { //используется для установки способа аутентификации, особенно если их несколько
 
-//        System.out.println("default inmemory called");
-//
-//        auth.inMemoryAuthentication() //создаем и подключаем инмемори админа для тестирования
-//                .withUser("admin")
-//                .password(passwordEncoder.encode("admin"))
-//                .roles("ADMIN", "USER");
-//
-//        auth.inMemoryAuthentication() //создаем и подключаем инмемори юзера для тестирования
-//                .withUser("user")
-//                .password(passwordEncoder.encode("user"))
-//                .roles("USER");
+        System.out.println("default inmemory called");
+
+        auth.inMemoryAuthentication() //создаем и подключаем инмемори админа для тестирования
+                .withUser("admin")
+                .password(passwordEncoder.encode("admin"))
+                .roles("ADMIN", "USER");
+
+        auth.inMemoryAuthentication() //создаем и подключаем инмемори юзера для тестирования
+                .withUser("user")
+                .password(passwordEncoder.encode("user"))
+                .roles("USER");
 
         System.out.println("configure called");
 
