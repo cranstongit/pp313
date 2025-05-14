@@ -7,5 +7,6 @@ import java.util.Set;
 
 public interface RoleService {
     Set<Role> findAll();
+    Set<Role> findAllOrThrow();
     Set<Role> findByIds(List<Long> ids);
 }

@@ -5,6 +5,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import ru.kata.spring.boot_security.demo.dao.RoleDao;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
@@ -23,23 +24,47 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
    private final UserDao userDao;
+   private final RoleService roleService;
    private final PasswordEncoder passwordEncoder;
 
-   public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder) {
+   public UserServiceImpl(UserDao userDao, RoleService roleService, PasswordEncoder passwordEncoder) {
       this.userDao = userDao;
+      this.roleService = roleService;
       this.passwordEncoder = passwordEncoder;
    }
 
    @Transactional
    @Override
    public void save(User user) {
+
+      if (user.getRoleIds() == null || user.getRoleIds().isEmpty()) {
+         throw new IllegalArgumentException("Не выбрана ни одна роль.");
+      }
+
+      Set<Role> roles = roleService.findByIds(user.getRoleIds());
+
+      if (roles == null || roles.isEmpty()) {
+         throw new IllegalArgumentException("Указанные роли не найдены.");
+      }
+
+      user.setRoles(roles);
       user.setPassword(passwordEncoder.encode(user.getPassword()));
+
       userDao.save(user);
    }
 
    @Override
-   public User find(long id) {
-      return userDao.find(id);
+   public User find(long id) { return userDao.find(id); }
+
+   @Override
+   public User findOrThrow(long id) {
+
+      User user = userDao.find(id);
+
+      if (user == null) {
+         throw new EntityNotFoundException("User with id " + id + " not found");
+      }
+      return user;
    }
 
    @Transactional
@@ -58,6 +83,10 @@ public class UserServiceImpl implements UserService {
       } else {
          user.setPassword(existingUser.getPassword());
       }
+
+      Set<Role> roles = roleService.findByIds(user.getRoleIds());
+      user.setRoles(roles);
+      user.setId(id);
 
       userDao.merge(user);
    }

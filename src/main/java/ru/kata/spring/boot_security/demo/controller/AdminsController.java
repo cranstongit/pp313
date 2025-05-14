@@ -9,14 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
-import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
@@ -30,20 +28,17 @@ public class AdminsController {
         this.roleService = roleService;
     }
 
+
     @GetMapping({"/", ""})
     @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
     public String visitAdminPage(Principal principal, ModelMap model) {
 
         model.addAttribute("getUsers", userService.findAll()); //получаем всех пользователей
-
-        String adminname = principal.getName();
-
-        User admin = userService.findByUsername(adminname);
-
-        model.addAttribute("admin", admin);
+        model.addAttribute("admin", userService.findByUsername(principal.getName()));
 
         return "admin";
     }
+
 
     @GetMapping("/404")
     public String showError(ModelMap model) {
@@ -52,6 +47,7 @@ public class AdminsController {
 
         return "404";
     }
+
 
     @GetMapping("/newuser")
     @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
@@ -67,17 +63,11 @@ public class AdminsController {
     @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
     public String newUser(@ModelAttribute("newUser") User user, ModelMap model) {
 
-        Set<Role> roles = roleService.findByIds(user.getRoleIds()); // метод получения ролей по id
-
-        if (roles == null || roles.isEmpty()) {
-            model.addAttribute("errorMessage", "Роли не выбраны или не найдены.");
-            return "404";
-        }
-
-        user.setRoles(roles);
-
         try {
             userService.save(user);
+        } catch (IllegalArgumentException e) { // обработка не выбранных ролей или если роли отсутствуют
+            model.addAttribute("errorMessage", "Ошибка: " + e.getMessage());
+            return "404";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Ошибка при сохранении пользователя: " + e.getMessage());
             return "404";
@@ -85,6 +75,7 @@ public class AdminsController {
 
         return "redirect:/admin";
     }
+
 
     @GetMapping("/deleteuser")
     @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
@@ -106,19 +97,18 @@ public class AdminsController {
         return "redirect:/admin";
     }
 
+
     @GetMapping("/edituser/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")  //второй слой защиты
     public String editUserForm(@PathVariable("id") long id, ModelMap model) {
 
-        User user = userService.find(id);
-
-        if (user == null) {
-            model.addAttribute("errorMessage", "Пользователь не найден");
+        try {
+            model.addAttribute("updateUser", userService.findOrThrow(id));
+            model.addAttribute("allRoles", roleService.findAllOrThrow());
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("errorMessage", "Пользователь или роли не найдены: " + e.getMessage());
             return "404";
         }
-
-        model.addAttribute("updateUser", user);
-        model.addAttribute("allRoles", roleService.findAll());
 
         return "user";
     }
@@ -127,10 +117,6 @@ public class AdminsController {
     @PreAuthorize("hasRole('ROLE_ADMIN')") //второй слой защиты
     public String updateUser(@PathVariable("id") long id,
                              @ModelAttribute("updateUser") User user, ModelMap model) {
-
-        Set<Role> roles = roleService.findByIds(user.getRoleIds());
-
-        user.setRoles(roles);
 
         try {
             userService.update(id, user);
